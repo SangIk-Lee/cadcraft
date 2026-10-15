@@ -121,6 +121,8 @@ pub struct CanvasState {
     pub param: crate::parametric::Cache,
     /// A selection window opened by a press-and-drag, to close where the button is let go.
     drag_window: bool,
+    /// Primary press retained across frames; egui forgets it when a moving click is released.
+    selection_press: Option<selection::Press>,
     /// The right-click that opened the shortcut menu held Shift or Ctrl: it is the object snap
     /// menu ([`crate::context_menu`]).
     pub snap_menu: bool,
@@ -1337,6 +1339,7 @@ pub fn show(app: &mut CadApp, ui: &mut egui::Ui) {
         if let Err(e) = app.session.click_tile(i) {
             app.session.echo(e.to_string());
         }
+        selection::cancel(app);
         ui.ctx().request_repaint();
         return;
     }
@@ -1368,6 +1371,7 @@ pub fn show(app: &mut CadApp, ui: &mut egui::Ui) {
         let in_active = active_vp.as_ref().is_some_and(|v| active_clip.as_ref().map_or(in_rect(v), |c| c.contains(pp)));
         if !in_active {
             app.canvas.hot_grips.clear();
+            selection::cancel(app);
             app.session.pending_window = None;
             app.canvas.drag_window = false;
             if app.run("mspace", serde_json::json!({"at": [pp.x, pp.y]})).is_err() && active_vp.is_some() {
@@ -1386,6 +1390,7 @@ pub fn show(app: &mut CadApp, ui: &mut egui::Ui) {
         && let Some(hp) = hover_pos
         && edit_text_at(app, xf.to_world(hp))
     {
+        selection::cancel(app);
         return;
     }
 
@@ -1399,6 +1404,7 @@ pub fn show(app: &mut CadApp, ui: &mut egui::Ui) {
         && let Some(h) = hatch_at(app, xf.to_world(hp), scale)
     {
         app.session.set_selection(vec![h]);
+        selection::cancel(app);
         crate::hatchdlg::open_edit(app);
         hatch_dialog = true;
     }
@@ -1493,7 +1499,14 @@ pub fn show(app: &mut CadApp, ui: &mut egui::Ui) {
         app.session.pending_window = None;
         app.canvas.drag_window = false;
     }
-    let pressed_primary = pressed_primary && !picked && !hatch_dialog && !idle_dbl;
+    let selecting = selection::active(app);
+    if selecting && !picked && !hatch_dialog && !idle_dbl && !middle_down && focused && !ui.input(|i| i.key_pressed(egui::Key::Escape)) {
+        let events = ui.input(|i| i.events.clone());
+        selection::input(app, &xf, &resp, &events);
+    } else {
+        selection::cancel(app);
+    }
+    let pressed_primary = pressed_primary && !picked && !hatch_dialog && !idle_dbl && !selecting;
     // Clicks.
     if inside
         && pressed_primary
@@ -1525,31 +1538,6 @@ pub fn show(app: &mut CadApp, ui: &mut egui::Ui) {
             click_grip(app, g, mods.shift);
         } else if let Err(e) = app.session.idle_click(raw_world.unwrap_or(p), mods.shift) {
             app.session.echo(e.to_string());
-        }
-    }
-    // Press-and-drag selection window (AutoCAD's PICKDRAG = 2; click-click still works): a drag
-    // that starts while objects are being selected opens a window where the button went down,
-    // and letting go closes it. Drags on grips and drags while drawing are left alone.
-    if resp.drag_started_by(egui::PointerButton::Primary)
-        && !middle_down
-        && app.session.pending_window.is_none()
-        && let Some(origin) = ui.input(|i| i.pointer.press_origin())
-        && rect.contains(origin)
-        && grip_at(app, &xf, Some(origin)).is_none()
-        && crate::dyngrips::at(app, &xf, Some(origin)).is_none()
-    {
-        app.canvas.drag_window = app.session.begin_window(xf.to_world(origin));
-    }
-    if app.canvas.drag_window && resp.drag_stopped_by(egui::PointerButton::Primary) {
-        app.canvas.drag_window = false;
-        if app.session.pending_window.is_some()
-            && let Some(end) = ui.input(|i| i.pointer.interact_pos())
-        {
-            let end = xf.to_world(end);
-            let done = if app.session.prompting() { app.session.input(Input::Point(end)) } else { app.session.idle_click(end, mods.shift) };
-            if let Err(e) = done {
-                app.session.echo(e.to_string());
-            }
         }
     }
     // Right-click acts as Enter while a command runs (the classic CAD default; held, it opens the
@@ -2604,6 +2592,8 @@ pub(crate) mod tests {
 mod blockedit;
 /// The COMPARE overlay.
 mod compare;
+/// Ordered primary-button events for object and two-corner window selection.
+mod selection;
 
 /// Background rebuilds of the display list for a new view.
 mod rebuild;
