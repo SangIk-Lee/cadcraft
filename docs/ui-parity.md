@@ -1,6 +1,6 @@
 # UI parity
 
-> **Last reviewed:** 2026-10-10 · **Last updated:** 2026-10-15 · **Change:** minor (saved two-click selection mode; no parity estimate change) · **Target:** Autodesk AutoCAD 2027 for Mac (26.0)
+> **Last reviewed:** 2026-10-10 · **Last updated:** 2026-10-15 · **Change:** minor (idle grip cursor snap and Properties shortcut toggle; no parity estimate change) · **Target:** Autodesk AutoCAD 2027 for Mac (26.0)
 
 How CADCraft's interaction compares with AutoCAD's: point entry, object snaps, tracking, dynamic
 input, grips, selection, the command line, chrome and navigation. A drafter's speed in AutoCAD
@@ -119,7 +119,7 @@ down-arrow options menu (DYNPROMPT), and DYNDIM.
 | Multifunctional grip hover menus (Add Vertex, Remove Vertex, Convert to Arc, Lengthen …) | yes | **no** |
 | Grip dimensional input (length/angle fields) | yes | no |
 | Dynamic block grips | yes | no (no dynamic blocks) |
-| Grip appearance (GRIPSIZE, colours, hover) | yes | GRIPSIZE, GRIPS and GRIPOBJLIMIT honoured (Options ▸ Selection); no grip colours |
+| Grip appearance (GRIPSIZE, colours, hover) | yes | GRIPSIZE, GRIPS and GRIPOBJLIMIT honoured (Options ▸ Selection); idle crosshair acquires the selected grip within its hit box (including polyline vertices and midpoints); no grip colours |
 
 ## Selection (≈ 40%)
 
@@ -158,7 +158,7 @@ down-arrow options menu (DYNPROMPT), and DYNDIM.
 | Menu bar | 11 menus, 491 leaf items | same 11 menus; 245/491 items covered (233 by `cargo xtask parity`, which counts engine commands only, plus 12 UI-only items: see [parity-checklist.md](parity-checklist.md)) |
 | Tool Bar, File tabs, Start tab, layout tabs | yes | yes |
 | Tool Sets palette (Drafting, Modeling, … with flyouts) | yes | yes for 2D groups |
-| Properties Inspector, Quick Properties | yes | yes (every control acts or is visibly unavailable, #182); block references show read-only Position X/Y/Z from their stored insertion point; coordinate editing is still missing |
+| Properties Inspector, Quick Properties | yes | yes (every control acts or is visibly unavailable, #182); Ctrl/Cmd+1 toggles Properties even with text focus; explicit PROPERTIES still opens it; block references show read-only Position X/Y/Z from their stored insertion point; coordinate editing is still missing |
 | Layer Properties Manager (filters, states, VP overrides) | yes | yes |
 | Blocks palette, Content | yes | Blocks window (click to insert, #28) |
 | Status bar toggles | ~25 | most toggles; Annotation Visibility and Workspace do nothing |
@@ -202,6 +202,7 @@ down-arrow options menu (DYNPROMPT), and DYNDIM.
 
 | Date | Change | Summary |
 |---|---|---|
+| 2026-10-15 | minor | Idle cursor acquires selected grips within the existing hit box; Ctrl/Cmd+1 toggles Properties even with text focus, preserving explicit open commands and active drawing commands. No parity estimate change. |
 | 2026-10-15 | minor | Saved PICKDRAG 0/2 preference, Selection checkbox and desktop --two-click-selection flag. Mode 0 consumes one press position per gesture regardless of travel; mode 2 preserves drag selection. Tested idle/SELECT, batched events and 100%/200% scale. No parity estimate change. |
 | 2026-10-15 | minor | Window/crossing selection consumes ordered press/release events, retains moving second corners and batched clicks, and tolerates small first-click motion. Deliberate drag selection remains available. No parity estimate change. |
 | 2026-10-12 | minor | Selected and hovered objects redrawn in the selection colour (text and arrowheads included); Options ▸ Selection laid out as AutoCAD's: Object grouping, Show grips, grip object limit, selection preview, Visual Effect Settings (selection area, preview filter) |

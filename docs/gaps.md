@@ -1,6 +1,6 @@
 # Where CADCraft falls short of AutoCAD
 
-> **Last reviewed:** 2026-10-10 · **Last updated:** 2026-10-15 · **Change:** minor (saved two-click selection mode; no parity estimate change) · **Target:** Autodesk AutoCAD 2027
+> **Last reviewed:** 2026-10-10 · **Last updated:** 2026-10-15 · **Change:** minor (idle grip cursor snap and Properties shortcut toggle; no parity estimate change) · **Target:** Autodesk AutoCAD 2027
 
 Every known shortfall, one row each, ranked within each section by user impact. This is the work
 list: agents pick from here (top of a section first), and remove or update a row in the same PR
@@ -145,6 +145,7 @@ Detail: [localization-parity.md](localization-parity.md).
 
 | Date | Change | Summary |
 |---|---|---|
+| 2026-10-15 | minor | Idle cursor acquires selected grips within their hit boxes. Ctrl/Cmd+1 toggles Properties even with text focus and retains its docking position. U5 hover-menu gaps and parity estimates are unchanged. |
 | 2026-10-15 | minor | PICKDRAG 0/2 is saved in Options. Mode 0 uses two press positions and never completes a rectangle from one held-button gesture; desktop --two-click-selection applies it at startup. Lasso remains a U6 gap; no parity estimate change. |
 | 2026-10-15 | minor | Two-corner selection keeps moving releases and multiple clicks in one frame; small first-click motion no longer consumes a tiny selection window. U6's remaining feature gaps and parity estimates are unchanged. |
 | 2026-10-15 | minor | `entities` / MCP `query_entities` accept `selected:true`, combined with existing filters and paging; selection, drawing and undo/redo stay unchanged. No parity estimate change. |
