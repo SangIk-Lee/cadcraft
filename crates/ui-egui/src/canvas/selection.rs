@@ -26,6 +26,10 @@ pub(super) fn cancel(app: &mut CadApp) {
 }
 
 pub(super) fn input(app: &mut CadApp, xf: &Xf, response: &Response, events: &[Event]) {
+    // A preference changed during a drag cancels that old gesture, not a click-click window.
+    if !app.session.settings.pickdrag && app.canvas.drag_window {
+        cancel(app);
+    }
     let owns_pointer = response.hovered() || response.dragged_by(PointerButton::Primary) || response.drag_stopped_by(PointerButton::Primary);
     for event in events {
         if !active(app) {
@@ -50,14 +54,16 @@ pub(super) fn input(app: &mut CadApp, xf: &Xf, response: &Response, events: &[Ev
                 if press.second_corner && app.session.pending_window.is_none() {
                     continue;
                 }
-                if !dragged && !xf.rect.contains(pos) {
+                if app.session.settings.pickdrag && !dragged && !xf.rect.contains(pos) {
                     continue;
                 }
                 // A deliberate grip drag is not an object-selection window.
-                if !press.second_corner && press.on_grip && press.origin.distance(pos) > CLICK_SLOP {
+                if app.session.settings.pickdrag && !press.second_corner && press.on_grip && press.origin.distance(pos) > CLICK_SLOP {
                     continue;
                 }
-                let at = if dragged || press.second_corner { pos } else { press.origin };
+                // In two-click mode a gesture supplies exactly one press position, regardless
+                // of travel before release. Never turn that travel into both window corners.
+                let at = if app.session.settings.pickdrag && (dragged || press.second_corner) { pos } else { press.origin };
                 click(app, xf, at, modifiers);
             }
             Event::PointerGone => cancel(app),
@@ -68,6 +74,7 @@ pub(super) fn input(app: &mut CadApp, xf: &Xf, response: &Response, events: &[Ev
 
 fn start_drag(app: &mut CadApp, xf: &Xf, pos: Pos2) {
     if let Some(press) = app.canvas.selection_press
+        && app.session.settings.pickdrag
         && !press.second_corner
         && !press.on_grip
         && !app.canvas.drag_window

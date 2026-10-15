@@ -307,6 +307,14 @@ fn selection(app: &CadApp, ui: &mut egui::Ui, changes: &mut Map<String, Value>) 
         if left.checkbox(&mut shift_adds, crate::tl!("Hold Shift to add to the selection")).changed() {
             changes.insert("PICKADD".into(), json!(i32::from(!shift_adds)));
         }
+        let mut two_clicks = !st.pickdrag;
+        if left
+            .checkbox(&mut two_clicks, crate::tl!("Select using two clicks only"))
+            .on_hover_text(crate::tl!("Each click uses the press position; dragging does not complete a selection window."))
+            .changed()
+        {
+            changes.insert("PICKDRAG".into(), json!(if two_clicks { 0 } else { 2 }));
+        }
         let mut grouping = st.pickstyle & 1 != 0;
         if left.checkbox(&mut grouping, crate::tl!("Object grouping")).changed() {
             changes.insert("PICKSTYLE".into(), json!((st.pickstyle & !1) | u8::from(grouping)));

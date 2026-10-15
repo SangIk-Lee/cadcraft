@@ -977,6 +977,8 @@
 	Save new drawings as	Зберігати нові креслення як
 	Screen magnifiers, screen readers and recorders follow the system cursor.	Екранні лупи, програми читання з екрана та запису стежать за системним курсором.
 	Select objects first, then choose a command	Спочатку вибирати об'єкти, потім команду
+	Select using two clicks only	Вибирати лише двома клацаннями
+	Each click uses the press position; dragging does not complete a selection window.	Кожне клацання використовує позицію натискання; перетягування не завершує рамку вибору.
 	Selection	Вибір
 	Selection Area Effect	Ефект області вибору
 	Selection Preview Filter	Фільтр попереднього перегляду вибору

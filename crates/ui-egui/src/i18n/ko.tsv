@@ -950,6 +950,8 @@
 	Save new drawings as	새 도면 저장 형식
 	Screen magnifiers, screen readers and recorders follow the system cursor.	화면 돋보기, 화면 읽기 프로그램 및 녹화 프로그램은 시스템 커서를 따라갑니다.
 	Select objects first, then choose a command	객체를 먼저 선택한 다음 명령 선택
+	Select using two clicks only	두 번 클릭으로만 영역 선택
+	Each click uses the press position; dragging does not complete a selection window.	버튼을 누른 위치를 모서리로 사용합니다. 드래그만으로 영역 선택을 완료하지 않습니다.
 	Selection	선택
 	Settings...	설정...
 	Show Quick Properties for selected objects	선택한 객체의 빠른 특성 표시

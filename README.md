@@ -134,6 +134,13 @@ offset 0.25                     then pick the circle and a side
 zoom e                          zoom to extents
 ```
 
+For two-click rectangle selection, enable **Options ▸ Selection ▸ Select using two clicks only**
+or enter `PICKDRAG 0`. Each press/release supplies one corner at the press position, even if the
+pointer moves while held. The preference survives restarts. `PICKDRAG 2` restores both clicks
+and drag selection (the default); drag-only mode `1` and lasso are not implemented.
+The desktop flag `--two-click-selection` reapplies mode `0` after loading the profile on every
+launch; omit the flag when you want a saved mode `2` to take effect.
+
 The web build: `cd apps/cadcraft-web && trunk serve` (needs [trunk](https://trunkrs.dev)).
 
 ### Fonts

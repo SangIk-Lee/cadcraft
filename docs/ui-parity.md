@@ -1,6 +1,6 @@
 # UI parity
 
-> **Last reviewed:** 2026-10-10 · **Last updated:** 2026-10-15 · **Change:** minor (moving and batched clicks retain both selection corners; no parity estimate change) · **Target:** Autodesk AutoCAD 2027 for Mac (26.0)
+> **Last reviewed:** 2026-10-10 · **Last updated:** 2026-10-15 · **Change:** minor (saved two-click selection mode; no parity estimate change) · **Target:** Autodesk AutoCAD 2027 for Mac (26.0)
 
 How CADCraft's interaction compares with AutoCAD's: point entry, object snaps, tracking, dynamic
 input, grips, selection, the command line, chrome and navigation. A drafter's speed in AutoCAD
@@ -127,7 +127,7 @@ down-arrow options menu (DYNPROMPT), and DYNDIM.
 |---|---|---|
 | Pick, implied window (left→right) and crossing (right→left) | yes | yes, coloured and dashed rectangles, filled as SELECTIONAREA, WINDOWAREACOLOR, CROSSINGAREACOLOR and SELECTIONAREAOPACITY say (Visual Effect Settings); ordered pointer events retain both corners in a slow frame and accept a moving second click (`canvas/selection.rs`) |
 | Keywords W, C, WP, CP, F, BOX, AU, SI, M, G (group), CL (class) | yes | yes except CLass: W, C, F, WP, CP (#226); BOX, AUto, SIngle, Multiple, Group, Add, Remove, Undo (#428); ALL, Last, Previous |
-| Press-drag selection windows (PICKDRAG) | yes | yes (#63, PICKDRAG = 2); up to 10 logical points of motion is treated as click jitter, larger motion opens a drag window |
+| Press-drag selection windows (PICKDRAG) | yes | saved modes 0 (two clicks at press positions, regardless of travel before release) and 2 (clicks or drag, default); Options ▸ Selection checkbox. In mode 2, up to 10 logical points of motion is click jitter, larger motion opens a drag window. Mode 1 and lasso are not implemented |
 | Lasso | yes | **no** |
 | Selection cycling (SELECTIONCYCLING) | yes | toggle nothing reads |
 | Selection preview, hover highlight | yes | selected and hovered objects redrawn in the selection colour, fills half see-through (SELECTIONEFFECT 1; 0 dashed), selection effect color; HIGHLIGHT (not saved), SELECTIONPREVIEW, PREVIEWEFFECT, PREVIEWFILTER (Visual Effect Settings) |
@@ -202,6 +202,7 @@ down-arrow options menu (DYNPROMPT), and DYNDIM.
 
 | Date | Change | Summary |
 |---|---|---|
+| 2026-10-15 | minor | Saved PICKDRAG 0/2 preference, Selection checkbox and desktop --two-click-selection flag. Mode 0 consumes one press position per gesture regardless of travel; mode 2 preserves drag selection. Tested idle/SELECT, batched events and 100%/200% scale. No parity estimate change. |
 | 2026-10-15 | minor | Window/crossing selection consumes ordered press/release events, retains moving second corners and batched clicks, and tolerates small first-click motion. Deliberate drag selection remains available. No parity estimate change. |
 | 2026-10-12 | minor | Selected and hovered objects redrawn in the selection colour (text and arrowheads included); Options ▸ Selection laid out as AutoCAD's: Object grouping, Show grips, grip object limit, selection preview, Visual Effect Settings (selection area, preview filter) |
 | 2026-10-12 | minor | Animation effects (dialog and menu fades, smoothed wheel scrolling and ⌘/Ctrl+wheel zoom) follow the operating system's setting; View ▸ Accessibility ▸ Animation Effects chooses System, On or Off |

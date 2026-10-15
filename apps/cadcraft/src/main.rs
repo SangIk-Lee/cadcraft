@@ -1,6 +1,7 @@
 //! CADCraft desktop app.
 //!
-//! Usage: `cadcraft [--control <port>] [--sample] [files…]`
+//! Usage: `cadcraft [--control <port>] [--sample] [--two-click-selection] [files…]`
+//! `--two-click-selection` applies PICKDRAG=0 after loading the saved profile.
 //!
 //! `--control <port>` (or `CADCRAFT_CONTROL_PORT`) starts a localhost JSON-lines control server:
 //! `{"id":1,"method":"cmdline.input","params":{"text":"circle 0,0 5"}}` → `{"id":1,"ok":true,…}`.
@@ -233,11 +234,13 @@ fn main() -> eframe::Result {
         control_port_from("CADCRAFT_CONTROL_PORT", std::env::var_os("CADCRAFT_CONTROL_PORT").map(|p| p.to_string_lossy().into_owned()));
     let mut files = Vec::new();
     let mut sample = false;
+    let mut two_click_selection = false;
     let mut args = std::env::args().skip(1);
     while let Some(a) = args.next() {
         match a.as_str() {
             "--control" => control_port = control_flag(control_port, args.next()),
             "--sample" => sample = true,
+            "--two-click-selection" => two_click_selection = true,
             "--version" | "-V" => {
                 println!("{}", version_string());
                 return Ok(());
@@ -321,6 +324,11 @@ fn main() -> eframe::Result {
             // The user profile (Options): drafting settings, selection sizes, drawing-area colours.
             if let Some(profile) = cc.storage.and_then(|s| s.get_string(cadcraft_ui_egui::options::PROFILE_KEY)) {
                 app.load_profile(&profile);
+            }
+            // Explicit launch preference wins over the saved profile; the normal Options
+            // command keeps this on the same path as the dialog and control channel.
+            if two_click_selection && let Err(error) = app.run("options", serde_json::json!({"PICKDRAG": 0})) {
+                app.set_status(error.to_string());
             }
             if let Some(prefs) = cc.storage.and_then(|s| s.get_string(cadcraft_ui_egui::PREFS_KEY)) {
                 app.load_prefs(&prefs);
